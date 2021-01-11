@@ -13,5 +13,7 @@ Feel free to clone this repo and have fun!
 * [requests](https://pypi.org/project/requests/)
 * json
 * datetime
+* os
 * [pandas](https://pandas.pydata.org/)
 * [plotly](https://plotly.com/)
+* [cufflinks](https://github.com/santosjorge/cufflinks)

@@ -2,6 +2,7 @@
 import requests as req
 from json import loads
 import datetime
+import os
 #Data Science modules
 import pandas as pd
 import plotly.express as px
@@ -51,7 +52,7 @@ def fetchRates():
         print('Please enter which rates you would like to fetch')
         print('1 - latest rates')
         print('2 - historical rates (set date)')
-        print('3 - historical rates (time period between two currencies)')
+        print('3 - historical rates (time period between two dates)')
         print('5 - return to main menu')
 
         choice = int(input('Enter your choice - '))
@@ -97,7 +98,11 @@ def latestRates():
     df = pd.DataFrame(completeDict)
     df = df.sort_values(by='Currency Name')
     print(df)
-    fig = px.bar(data_frame=df,x='Currency Name', y='Exchange Rate')
+    print('Printing results to CSV file...')
+    df.to_csv(f'latest-{datetime.datetime.now()}-{baseCurrency}.csv',index=False)
+    print(f'CSV created! Written to {os.getcwd()}')
+    print(f'File is called - latest-{datetime.datetime.now()}-{baseCurrency}')
+    fig = px.bar(data_frame=df,x='Currency Name', y='Exchange Rate', title=f'Latest rates on {datetime.datetime.now()} for {baseCurrency}')
     fig.show()
     
 
@@ -121,6 +126,9 @@ def historicalRatesSet():
     baseCurrency = setBase()
     compareCurrency = setCurrencyCompare()
 
+    currencyList = []
+    valueList = []
+
     print(f'Now fetching exchange rates for {baseCurrency} on the following date: {day}-{month}-{year}')
     #Get data
     response = req.get(url=f'https://api.exchangeratesapi.io/{year}-{month}-{day}?base={baseCurrency}&symbols={compareCurrency}')
@@ -131,8 +139,17 @@ def historicalRatesSet():
     print('Complete!')
     print(f'Exchange rate for {baseCurrency} on {day}-{month}-{year}')
     for key,value in exchangeDict.items():
+        currencyList.append(key)
+        valueList.append(f'{value:.2f}')
         #prints out the keys and values (up to 2 decimal places)
-        print(f'{key} - {value:.2f}')
+        #print(f'{key} - {value:.2f}')
+    completeDict = {'Currency Name':currencyList, 'Exchange Rate':valueList}
+    #make a dataframe
+    df = pd.DataFrame(completeDict)
+    df = df.sort_values(by='Currency Name')
+    print(df)
+    fig = px.bar(data_frame=df,x='Currency Name', y='Exchange Rate')
+    fig.show()
 
 def historicalRatesPeriod():
     '''
