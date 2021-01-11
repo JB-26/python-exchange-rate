@@ -128,6 +128,7 @@ def historicalRatesSet():
 
     currencyList = []
     valueList = []
+    historicalDate = f'{day}-{month}-{year}'
 
     print(f'Now fetching exchange rates for {baseCurrency} on the following date: {day}-{month}-{year}')
     #Get data
@@ -141,13 +142,16 @@ def historicalRatesSet():
     for key,value in exchangeDict.items():
         currencyList.append(key)
         valueList.append(f'{value:.2f}')
-        #prints out the keys and values (up to 2 decimal places)
-        #print(f'{key} - {value:.2f}')
+
     completeDict = {'Currency Name':currencyList, 'Exchange Rate':valueList}
     #make a dataframe
     df = pd.DataFrame(completeDict)
     df = df.sort_values(by='Currency Name')
     print(df)
+    print('Printing results to CSV file...')
+    df.to_csv(f'historical-{historicalDate}-{baseCurrency}.csv',index=False)
+    print(f'CSV created! Written to {os.getcwd()}')
+    print(f'File is called - historical-{historicalDate}-{baseCurrency}')
     fig = px.bar(data_frame=df,x='Currency Name', y='Exchange Rate')
     fig.show()
 
@@ -155,6 +159,7 @@ def historicalRatesPeriod():
     '''
     Function for getting historical rates from the API (on a time period)
     '''
+
     while True:
         try:
             print('NOTE: Creating start date')
@@ -198,13 +203,17 @@ def historicalRatesPeriod():
     #the response has multiple dictionaries
     exchangeDict = responseDict['rates']
     print('Complete!')
-    print(f'Exchange rate for {baseCurrency} on {day}-{month}-{year}')
-    for dictionary in exchangeDict.items():
-        print(f'Rates on {dictionary[0]}')
-        for key,value in dictionary[1].items():
-            #prints out the keys and values (up to 2 decimal places)
-            print(f'{key} - {value:.2f}')
+    
+    df = pd.DataFrame(exchangeDict)
+    df = df.reindex(sorted(df.columns), axis=1)
+    print(df)
+    print('Printing results to CSV file...')
+    df.to_csv(f'historical-{startDate}-{endDate}-{baseCurrency}.csv',index=True)
+    print(f'CSV created! Written to {os.getcwd()}')
+    print(f'File is called - historical-{startDate}-{endDate}-{baseCurrency}')
 
+    fig = px.line(data_frame=df, title=f'Historical rates between {startDate} - {endDate} for {baseCurrency}')
+    fig.show()
 
 def setYear():
     '''
