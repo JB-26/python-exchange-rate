@@ -206,13 +206,14 @@ def historicalRatesPeriod():
     
     df = pd.DataFrame(exchangeDict)
     df = df.reindex(sorted(df.columns), axis=1)
+    df = df.reindex(sorted(df.index), axis=0)
     print(df)
     print('Printing results to CSV file...')
     df.to_csv(f'historical-{startDate}-{endDate}-{baseCurrency}.csv',index=True)
     print(f'CSV created! Written to {os.getcwd()}')
     print(f'File is called - historical-{startDate}-{endDate}-{baseCurrency}')
 
-    fig = px.line(data_frame=df, title=f'Historical rates between {startDate} - {endDate} for {baseCurrency}')
+    fig = px.line(data_frame=df, x=list(df), y=df.index, title=f'Historical rates between {startDate} - {endDate} for {baseCurrency}')
     fig.show()
 
 def setYear():
