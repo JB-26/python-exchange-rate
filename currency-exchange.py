@@ -1,4 +1,5 @@
 #import modules
+from matplotlib.pyplot import axis
 import requests as req
 from json import loads
 import datetime
@@ -102,8 +103,6 @@ def latestRates():
     df.to_csv(f'latest-{datetime.datetime.now()}-{baseCurrency}.csv',index=False)
     print(f'CSV created! Written to {os.getcwd()}')
     print(f'File is called - latest-{datetime.datetime.now()}-{baseCurrency}')
-    fig = px.bar(data_frame=df,x='Currency Name', y='Exchange Rate', title=f'Latest rates on {datetime.datetime.now()} for {baseCurrency}')
-    fig.show()
     
 
 def historicalRatesSet():
@@ -152,8 +151,6 @@ def historicalRatesSet():
     df.to_csv(f'historical-{historicalDate}-{baseCurrency}.csv',index=False)
     print(f'CSV created! Written to {os.getcwd()}')
     print(f'File is called - historical-{historicalDate}-{baseCurrency}')
-    fig = px.bar(data_frame=df,x='Currency Name', y='Exchange Rate')
-    fig.show()
 
 def historicalRatesPeriod():
     '''
@@ -207,13 +204,15 @@ def historicalRatesPeriod():
     df = pd.DataFrame(exchangeDict)
     df = df.reindex(sorted(df.columns), axis=1)
     df = df.reindex(sorted(df.index), axis=0)
+    df = df.rename_axis("Dates", axis="columns")
+    df = df.rename_axis("Currency Code", axis="rows")
     print(df)
     print('Printing results to CSV file...')
     df.to_csv(f'historical-{startDate}-{endDate}-{baseCurrency}.csv',index=True)
     print(f'CSV created! Written to {os.getcwd()}')
     print(f'File is called - historical-{startDate}-{endDate}-{baseCurrency}')
 
-    fig = px.line(data_frame=df, x=list(df), y=df.index, title=f'Historical rates between {startDate} - {endDate} for {baseCurrency}')
+    fig = px.line(data_frame=df, title=f'Historical rates between {startDate} - {endDate} for {baseCurrency}')
     fig.show()
 
 def setYear():
