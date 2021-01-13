@@ -1,5 +1,4 @@
 #import modules
-from matplotlib.pyplot import axis
 import requests as req
 from json import loads
 import datetime
@@ -77,32 +76,35 @@ def latestRates():
     baseCurrency = setBase()
     compareCurrency = setCurrencyCompare()
 
-    print(f'Now getting latest rates for {baseCurrency} as of {datetime.datetime.now()}')
+    try:
+        print(f'Now getting latest rates for {baseCurrency} as of {datetime.datetime.now()}')
 
-    #Get data
-    response = req.get(url=f'https://api.exchangeratesapi.io/latest?base={baseCurrency}&symbols={compareCurrency}')
-    #Deserialise response into Python dictionary
-    responseDict = loads(response.text)
-    #the response has multiple dictionaries
-    exchangeDict = responseDict['rates']
-    print('Complete!')
-    print('Current exchange rates')
-    currencyList = []
-    valueList = []
-    for key,value in exchangeDict.items():
-        #prints out the keys and values (up to 2 decimal places)
-        #print(f'{key} - {value:.2f}')
-        currencyList.append(key)
-        valueList.append(f'{value:.2f}')
-    completeDict = {'Currency Name':currencyList, 'Exchange Rate':valueList}
-    #make a dataframe
-    df = pd.DataFrame(completeDict)
-    df = df.sort_values(by='Currency Name')
-    print(df)
-    print('Printing results to CSV file...')
-    df.to_csv(f'latest-{datetime.datetime.now()}-{baseCurrency}.csv',index=False)
-    print(f'CSV created! Written to {os.getcwd()}')
-    print(f'File is called - latest-{datetime.datetime.now()}-{baseCurrency}')
+        #Get data
+        response = req.get(url=f'https://api.exchangeratesapi.io/latest?base={baseCurrency}&symbols={compareCurrency}')
+        #Deserialise response into Python dictionary
+        responseDict = loads(response.text)
+        #the response has multiple dictionaries
+        exchangeDict = responseDict['rates']
+        print('Complete!')
+        print('Current exchange rates')
+        currencyList = []
+        valueList = []
+        for key,value in exchangeDict.items():
+            #prints out the keys and values (up to 2 decimal places)
+            #print(f'{key} - {value:.2f}')
+            currencyList.append(key)
+            valueList.append(f'{value:.2f}')
+        completeDict = {'Currency Name':currencyList, 'Exchange Rate':valueList}
+        #make a dataframe
+        df = pd.DataFrame(completeDict)
+        df = df.sort_values(by='Currency Name')
+        print(df)
+        print('Printing results to CSV file...')
+        df.to_csv(f'latest-{datetime.datetime.now()}-{baseCurrency}.csv',index=False)
+        print(f'CSV created! Written to {os.getcwd()}')
+        print(f'File is called - latest-{datetime.datetime.now()}-{baseCurrency}')
+    except:
+        print('An error has occurred - please try again!')
     
 
 def historicalRatesSet():
@@ -129,28 +131,31 @@ def historicalRatesSet():
     valueList = []
     historicalDate = f'{day}-{month}-{year}'
 
-    print(f'Now fetching exchange rates for {baseCurrency} on the following date: {day}-{month}-{year}')
-    #Get data
-    response = req.get(url=f'https://api.exchangeratesapi.io/{year}-{month}-{day}?base={baseCurrency}&symbols={compareCurrency}')
-    #Deserialise response into Python dictionary
-    responseDict = loads(response.text)
-    #the response has multiple dictionaries
-    exchangeDict = responseDict['rates']
-    print('Complete!')
-    print(f'Exchange rate for {baseCurrency} on {day}-{month}-{year}')
-    for key,value in exchangeDict.items():
-        currencyList.append(key)
-        valueList.append(f'{value:.2f}')
+    try:
+        print(f'Now fetching exchange rates for {baseCurrency} on the following date: {day}-{month}-{year}')
+        #Get data
+        response = req.get(url=f'https://api.exchangeratesapi.io/{year}-{month}-{day}?base={baseCurrency}&symbols={compareCurrency}')
+        #Deserialise response into Python dictionary
+        responseDict = loads(response.text)
+        #the response has multiple dictionaries
+        exchangeDict = responseDict['rates']
+        print('Complete!')
+        print(f'Exchange rate for {baseCurrency} on {day}-{month}-{year}')
+        for key,value in exchangeDict.items():
+            currencyList.append(key)
+            valueList.append(f'{value:.2f}')
 
-    completeDict = {'Currency Name':currencyList, 'Exchange Rate':valueList}
-    #make a dataframe
-    df = pd.DataFrame(completeDict)
-    df = df.sort_values(by='Currency Name')
-    print(df)
-    print('Printing results to CSV file...')
-    df.to_csv(f'historical-{historicalDate}-{baseCurrency}.csv',index=False)
-    print(f'CSV created! Written to {os.getcwd()}')
-    print(f'File is called - historical-{historicalDate}-{baseCurrency}')
+        completeDict = {'Currency Name':currencyList, 'Exchange Rate':valueList}
+        #make a dataframe
+        df = pd.DataFrame(completeDict)
+        df = df.sort_values(by='Currency Name')
+        print(df)
+        print('Printing results to CSV file...')
+        df.to_csv(f'historical-{historicalDate}-{baseCurrency}.csv',index=False)
+        print(f'CSV created! Written to {os.getcwd()}')
+        print(f'File is called - historical-{historicalDate}-{baseCurrency}')
+    except:
+        print('An error has occurred - please try again!')
 
 def historicalRatesPeriod():
     '''
@@ -192,28 +197,49 @@ def historicalRatesPeriod():
     baseCurrency = setBase()
     compareCurrency = setCurrencyCompare()
 
-    print(f'Now fetching exchange rates for {baseCurrency} between the following dates: {startDate} - {endDate}')
-    #Get data
-    response = req.get(url=f'https://api.exchangeratesapi.io/history?start_at={startDate}&end_at={endDate}&base={baseCurrency}&symbols={compareCurrency}')
-    #Deserialise response into Python dictionary
-    responseDict = loads(response.text)
-    #the response has multiple dictionaries
-    exchangeDict = responseDict['rates']
-    print('Complete!')
+    try:
+        print(f'Now fetching exchange rates for {baseCurrency} between the following dates: {startDate} - {endDate}')
+        #Get data
+        response = req.get(url=f'https://api.exchangeratesapi.io/history?start_at={startDate}&end_at={endDate}&base={baseCurrency}&symbols={compareCurrency}')
+        #Deserialise response into Python dictionary
+        responseDict = loads(response.text)
+        #the response has multiple dictionaries
+        exchangeDict = responseDict['rates']
+        print('Complete!')
     
-    df = pd.DataFrame(exchangeDict)
-    df = df.reindex(sorted(df.columns), axis=1)
-    df = df.reindex(sorted(df.index), axis=0)
-    df = df.rename_axis("Dates", axis="columns")
-    df = df.rename_axis("Currency Code", axis="rows")
-    print(df)
-    print('Printing results to CSV file...')
-    df.to_csv(f'historical-{startDate}-{endDate}-{baseCurrency}.csv',index=True)
-    print(f'CSV created! Written to {os.getcwd()}')
-    print(f'File is called - historical-{startDate}-{endDate}-{baseCurrency}')
+        #build DataFrame and clean up
+        df = pd.DataFrame(exchangeDict)
+        df = df.round(decimals=2)
+        df = df.reindex(sorted(df.columns), axis=1)
+        df = df.reindex(sorted(df.index), axis=0)
+        df = df.rename_axis("Dates", axis="columns")
+        df = df.rename_axis("Currency Code", axis="rows")
+        print(df)
+        print('Printing results to CSV file...')
+        df.to_csv(f'historical-{startDate}-{endDate}-{baseCurrency}.csv',index=True)
+        print(f'CSV created! Written to {os.getcwd()}')
+        print(f'File is called - historical-{startDate}-{endDate}-{baseCurrency}')
 
-    fig = px.line(data_frame=df, title=f'Historical rates between {startDate} - {endDate} for {baseCurrency}')
-    fig.show()
+        while True:
+            print('Do you want to print the mean (average) of each currency to a seperate CSV file?')
+            print("Type 'Y' for yes or 'N' for no")
+            meanChoice = input('Enter your choice - ').upper()
+            if meanChoice == 'Y':
+                df.mean(axis=1).to_csv(f'historical-{startDate}-{endDate}-{baseCurrency}-Mean.csv',index=True)
+                break
+            elif meanChoice == 'N':
+                print('Not printing the mean of currencies')
+                break
+            else:
+                print(f'{meanChoice} - is invalid, please try again!')
+
+        #build scatter graph and customise it
+        print('Now creating scatter plot - please wait...')
+        fig = px.scatter(data_frame=df, title=f'Historical rates between {startDate} - {endDate} for {baseCurrency}')
+        fig.update_traces(marker=dict(size=15,line=dict(width=2,color='DarkSlateGrey')))
+        fig.show()
+    except:
+        print('An error has occurred - please try again!')
 
 def setYear():
     '''
