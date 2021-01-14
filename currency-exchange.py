@@ -238,6 +238,8 @@ def historicalRatesPeriod():
         fig = px.scatter(data_frame=df, title=f'Historical rates between {startDate} - {endDate} for {baseCurrency}')
         fig.update_traces(marker=dict(size=15,line=dict(width=2,color='DarkSlateGrey')))
         fig.show()
+        fig.write_html(f'historical-{startDate}-{endDate}-{baseCurrency}.html')
+        print(f'Scatter plot has been saved as a HTML file called - historical-{startDate}-{endDate}-{baseCurrency}')
     except:
         print('An error has occurred - please try again!')
 

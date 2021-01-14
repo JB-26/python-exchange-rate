@@ -24,3 +24,17 @@ Feel free to clone this repo and have fun!
     * Used for making interactive graphs
 * [cufflinks](https://github.com/santosjorge/cufflinks)
     * Used to connect pandas and cufflinks
+
+### What does this program do?
+
+This program allows a user to make requests to the Exchange Rates API (which uses the European Central Bank as it's source). The user can:
+* Fetch today's exchange rates.
+* Fetch exchange rates from a day in history.
+* Fetch exchange rates between two dates.
+* Export the results to a CSV file
+* Export the mean of the selected currencies (when using data of where there are exchange rates between two dates)
+* Perform data analysis and make a scatter plot graph (when fetching exchange rates between two dates)
+
+### Use of Pandas
+When fetching exchange rates the program will create a DataFrame with pandas using the dictionary response from the API. This is so that the results can be sorted and for a scatter graph.
+
