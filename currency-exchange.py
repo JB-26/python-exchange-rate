@@ -6,6 +6,7 @@ import os
 #Data Science modules
 import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
 import cufflinks as cf
 
 #allows cufflinks to be used offline
@@ -55,7 +56,12 @@ def fetchRates():
         print('3 - historical rates (time period between two dates)')
         print('5 - return to main menu')
 
-        choice = int(input('Enter your choice - '))
+        while True:
+            try:
+                choice = int(input('Enter your choice - '))
+                break
+            except:
+                print("That's not a number - please try again!")
 
         if choice == 1:
             latestRates()
@@ -73,6 +79,8 @@ def latestRates():
     '''
     Function for getting the latest rates from the API
     '''
+    currentDateTime = datetime.datetime.now().strftime('%Y-%m-%d')
+    currentDateTime = str(currentDateTime)
     baseCurrency = setBase()
     compareCurrency = setCurrencyCompare()
 
@@ -94,15 +102,22 @@ def latestRates():
             #print(f'{key} - {value:.2f}')
             currencyList.append(key)
             valueList.append(f'{value:.2f}')
-        completeDict = {'Currency Name':currencyList, 'Exchange Rate':valueList}
+        completeDict = {'Currency':currencyList, 'Exchange':valueList}
         #make a dataframe
         df = pd.DataFrame(completeDict)
-        df = df.sort_values(by='Currency Name')
+        df = df.sort_values(by='Currency')
         print(df)
         print('Printing results to CSV file...')
-        df.to_csv(f'latest-{datetime.datetime.now()}-{baseCurrency}.csv',index=False)
+        df.to_csv(f'latest-{baseCurrency}-{currentDateTime}.csv',index=False)
         print(f'CSV created! Written to {os.getcwd()}')
         print(f'File is called - latest-{datetime.datetime.now()}-{baseCurrency}')
+        print('Now creating table - please wait...')
+        fig = go.Figure(data=[go.Table(
+    header=dict(values=list(df.columns),),
+    cells=dict(values=[df.Currency, df.Exchange]))])
+        fig.show()
+        fig.write_html(f'latest-{baseCurrency}-{currentDateTime}.html')
+        print(f'Table has been saved as a HTML file called - latest-{baseCurrency}-{currentDateTime}')
     except:
         print('An error has occurred - please try again!')
     
@@ -145,15 +160,22 @@ def historicalRatesSet():
             currencyList.append(key)
             valueList.append(f'{value:.2f}')
 
-        completeDict = {'Currency Name':currencyList, 'Exchange Rate':valueList}
+        completeDict = {'Currency':currencyList, 'Exchange':valueList}
         #make a dataframe
         df = pd.DataFrame(completeDict)
-        df = df.sort_values(by='Currency Name')
+        df = df.sort_values(by='Currency')
         print(df)
         print('Printing results to CSV file...')
         df.to_csv(f'historical-{historicalDate}-{baseCurrency}.csv',index=False)
         print(f'CSV created! Written to {os.getcwd()}')
         print(f'File is called - historical-{historicalDate}-{baseCurrency}')
+        print('Now creating table - please wait...')
+        fig = go.Figure(data=[go.Table(
+    header=dict(values=list(df.columns),),
+    cells=dict(values=[df.Currency, df.Exchange]))])
+        fig.show()
+        fig.write_html(f'historical-{historicalDate}-{baseCurrency}.html')
+        print(f'Table has been saved as a HTML file called - historical-{historicalDate}-{baseCurrency}')
     except:
         print('An error has occurred - please try again!')
 
@@ -301,7 +323,6 @@ def main():
         print('Enter the character inbetween the parentheses')
 
         print('(F)etch rates')
-        print('(V)iew configuration')
         print('(A)bout')
         print('(Q)uit')
 
@@ -311,7 +332,13 @@ def main():
         if choice == 'F':
             fetchRates()
         elif choice == 'A':
-            print('The currency exchange program uses the foreign exchange rates API (https://exchangeratesapi.io/) which gets data from the European Central Bank.')
+            print(
+                '''
+The currency exchange program uses the foreign exchange rates API (https://exchangeratesapi.io/) which gets data from the European Central Bank.
+The data is then used to create a DataFrame in pandas which is then used in Plotly to create a scatter graph.
+Visit the project page on GitLab for more information - https://gitlab.com/JoshBl_/python-currency-exchange-rate
+Written by Joshua Blewitt - https://joshblewitt.dev/
+                ''')
         elif choice == 'Q':
             print('Goodbye!')
             break

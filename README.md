@@ -36,5 +36,14 @@ This program allows a user to make requests to the Exchange Rates API (which use
 * Perform data analysis and make a scatter plot graph (when fetching exchange rates between two dates)
 
 ### Use of Pandas
-When fetching exchange rates the program will create a DataFrame with pandas using the dictionary response from the API. This is so that the results can be sorted and for a scatter graph.
+* When fetching exchange rates the program will create a DataFrame with pandas using the dictionary response from the API. This is so that the results can be sorted and for a scatter graph or a table (which is created using Plotly)
+* The DataFrame will be exported to a CSV file
+    * If you have gathered data between two historical dates - you have the option to export a CSV file of the average rates for each currency
+
+### Use of Plotly
+Plotly is used to create interactive graphs. Each graph is saved as a HTML file.
+* A table is created when current data or historical data for a specified day is used
+* A scatter graph is created when retrieving historical data between two dates
+
+**Warning!** If you request a large amount of historical data between two dates, this can result in long load times for the graph to be displayed.
 
